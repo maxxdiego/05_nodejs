@@ -2,10 +2,12 @@ import express from 'express'
 import GameService from './services/GameService.js'
 import mongoose from 'mongoose'
 import {ObjectId} from 'mongodb'
+import cors from 'cors'
 const app = express()
 
 app.use(express.urlencoded({extended: false}))
 app.use(express.json())
+app.use(cors())
 
 // Iniciando conexão com o banco de dados do MongoDB
 mongoose.connect("mongodb://127.0.0.1:27017/games")
@@ -37,7 +39,7 @@ app.get("/game/:id", (req,res) => {
 
 //Cadastrando um Game
 app.post("/game", (req,res) => {
-    const {title, price, year} = req.body
+    const {title, year, price} = req.body
     GameService.Create(title, year, price)
     res.sendStatus(200)
 })
@@ -58,7 +60,7 @@ app.put("/game/:id", (req,res) => {
     if(ObjectId.isValid(req.params.id)){
         const id = req.params.id
         let {title, price, year} = req.body
-        GameService.Update(id, title, price, year)
+        GameService.Update(id, title, year, price)
         res.sendStatus(200)
     }else{
         res.sendStatus(400) //Requisição inválida - Bad request
